@@ -121,30 +121,28 @@ window.addEventListener('DOMContentLoaded', function() {
 			return range;
 		},
 
-		createBR : function(aDocument)
+		createBR : function()
 		{
-			aDocument = aDocument || this.frame.contentDocument;
-			var br = aDocument.createElement('br');
-			br.setAttribute('_moz_dirty', '');
-			return br;
+			if (this.isHTML)
+				return '<br _moz_dirty="" />';
+			else
+				return '\n';
 		},
 
-		createLink : function(aFile, aDocument)
+		createLink : function(aFile)
 		{
-			aDocument = aDocument || this.frame.contentDocument;
 			var url = this.fileProtocolHandler.newFileURI(aFile).spec;
 			if (this.isHTML) {
-				let content = aDocument.createTextNode(this.shouldDecode ? decodeURI(url) : url);
-				let link = aDocument.createElement('a');
-				link.setAttribute('href', url);
-				link.setAttribute('_moz_dirty', '');
-				if (!this.shouldAttach)
-					link.setAttribute('moz-do-not-send', 'true');
-				link.appendChild(content);
+				let content = this.shouldDecode ? decodeURI(url) : url;
+				content = content.replace(/&/g, '&amp;')
+								.replace(/</g, '&lt;')
+								.replace(/>/g, '&gt;');
+				let donotsend = this.shouldAttach ? '' : ' moz-do-not-send="true" ';
+				let link = '<a href='+ url.quote() + ' _moz_dirty ' + donotsend + '>' + content + '</a>';
 				return link;
 			}
 			else {
-				return aDocument.createTextNode(url);
+				return url;
 			}
 		},
 
@@ -200,17 +198,22 @@ window.addEventListener('DOMContentLoaded', function() {
 				return;
 
 			var d = this.frame.contentDocument;
-			var fragment = d.createDocumentFragment();
+			var source = '';
 			files.forEach(function(aFile, aIndex) {
-				if (aIndex > 0) fragment.appendChild(this.createBR(d));
-				fragment.appendChild(this.createLink(aFile, d));
+				if (aIndex > 0) source += this.createBR();
+				source += this.createLink(aFile);
 			}, this);
 
 			var range = this.getCursorRange(aEvent);
 			if (range) {
-				this.editor.insertNode(fragment, range.startContainer,range.startOffset);
 				this.setCursor(range.startContainer, range.startOffset);
 				range.detach();
+				if (this.isHTML)
+					this.editor.QueryInterface(Components.interfaces.nsIHTMLEditor)
+							.insertHTML(source);
+				else
+					this.editor.QueryInterface(Components.interfaces.nsIPlaintextEditor)
+							.insertText(source);
 			}
 
 			aEvent.preventDefault();
