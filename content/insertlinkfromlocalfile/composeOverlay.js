@@ -139,6 +139,7 @@ window.addEventListener('DOMContentLoaded', function() {
 		init : function()
 		{
 			window.addEventListener('unload', this, false);
+			this.editor.addEventListener('dragenter', this, true);
 			this.editor.addEventListener('dragover', this, true);
 			this.editor.addEventListener('drop', this, true);
 		},
@@ -147,12 +148,23 @@ window.addEventListener('DOMContentLoaded', function() {
 		{
 			switch (aEvent.type)
 			{
+				case 'dragenter':
+				case 'dragover':
+					return this.onDragEnter(aEvent);
+
 				case 'drop':
 					return this.onDrop(aEvent);
 
 				case 'unload':
 					return this.onUnload();
 			}
+		},
+
+		onDragEnter : function(aEvent)
+		{
+			if (!this.isHTML &&
+				this.getLinkableFiles(aEvent).length)
+				aEvent.preventDefault();
 		},
 
 		onDrop : function(aEvent)
@@ -181,6 +193,8 @@ window.addEventListener('DOMContentLoaded', function() {
 		onUnload : function()
 		{
 			window.removeEventListener('unload', this, false);
+			this.editor.removeEventListener('dragenter', this, true);
+			this.editor.removeEventListener('dragover', this, true);
 			this.editor.removeEventListener('drop', this, true);
 		}
 	};
