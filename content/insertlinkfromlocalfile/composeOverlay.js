@@ -45,6 +45,9 @@ window.addEventListener('DOMContentLoaded', function() {
 		mDirectoryService : Components.classes['@mozilla.org/file/directory_service;1']
 			.getService(Components.interfaces.nsIProperties),
 
+		mMIMEService : Components.classes['@mozilla.org/mime;1']
+			.getService(Components.interfaces.nsIMIMEService),
+
 		get fileHandler()
 		{
 			if (!this.mFileHandler)
@@ -64,6 +67,18 @@ window.addEventListener('DOMContentLoaded', function() {
 		get editor()
 		{
 			return document.getElementById('content-frame');
+		},
+
+		isImageFile : function(aFile)
+		{
+			try {
+				let type = this.mMIMEService.getTypeFromFile(aFile);
+				if (type && type.indexOf('image/') == 0)
+					return true;
+			}
+			catch(e) {
+			}
+			return false;
 		},
 
 		init : function()
@@ -86,6 +101,24 @@ window.addEventListener('DOMContentLoaded', function() {
 
 		onDrop : function(aEvent)
 		{
+			var dt = aEvent.dataTransfer;
+			var files = [];
+			for (let i = 0, maxi = dt.mozItemCount; i < maxi; ++i)
+			{
+				let isImage = false;
+				let file = null;
+				let types = dt.mozTypesAt(i);
+				Array.forEach(types, function(aType) {
+					if (aType.indexOf('image/') == 0)
+						isImage = true;
+					if (aType == 'application/x-moz-file')
+						file = dt.mozGetDataAt(aType, i);
+				});
+				if (file && !isImage && !this.isImageFile(file))
+					files.push(file.QueryInterface(Components.interfaces.nsILocalFile));
+			}
+			if (!files.length)
+				return;
 		},
 
 		onUnload : function()
