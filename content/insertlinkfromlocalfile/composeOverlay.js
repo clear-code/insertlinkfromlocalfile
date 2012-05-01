@@ -71,6 +71,11 @@ window.addEventListener('DOMContentLoaded', function() {
 			return this.mPrefs.getBoolPref('extensions.insertlinkfromlocalfile@clear-code.com.attachLinkedFile');
 		},
 
+		get isHTML()
+		{
+			return this.editor.getAttribute('editortype') == 'htmlmail';
+		},
+
 		isImageFile : function(aFile)
 		{
 			try {
@@ -104,15 +109,22 @@ window.addEventListener('DOMContentLoaded', function() {
 			return files;
 		},
 
+		createBR : function(aDocument)
+		{
+			aDocument = aDocument || this.editor.contentDocument;
+			var br = aDocument.createElement('br');
+			br.setAttribute('_moz_dirty', '');
+			return br;
+		},
+
 		createLink : function(aFile, aDocument)
 		{
 			aDocument = aDocument || this.editor.contentDocument;
-			aDocument.createTextNode(aFile.path)
-			var url = this.fileProtocolHandler.newFileURI(aFile);
-			if (this.editor.getAttribute('editortype') == 'htmlmail') {
-				let content = aDocument.createTextNode(this.shouldDecode ? decodeURI(url.spec) : url.spec);
+			var url = this.fileProtocolHandler.newFileURI(aFile).spec;
+			if (this.isHTML) {
+				let content = aDocument.createTextNode(this.shouldDecode ? decodeURI(url) : url);
 				let link = aDocument.createElement('a');
-				link.setAttribute('href', url.spec);
+				link.setAttribute('href', url);
 				link.setAttribute('_moz_dirty', '');
 				if (!this.shouldAttach)
 					link.setAttribute('moz-do-not-send', 'true');
@@ -120,7 +132,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				return link;
 			}
 			else {
-				return aDocument.createTextNode(url.spec);
+				return aDocument.createTextNode(url);
 			}
 		},
 
@@ -155,11 +167,7 @@ window.addEventListener('DOMContentLoaded', function() {
 			var d = this.editor.contentDocument;
 			var fragment = d.createDocumentFragment();
 			files.forEach(function(aFile, aIndex) {
-				if (aIndex) {
-					let br = d.createElement('br');
-					br.setAttribute('_moz_dirty', '');
-					fragment.appendChild(br);
-				}
+				if (aIndex > 0) fragment.appdnChild(this.createBR(d));
 				fragment.appendChild(this.createLink(aFile, d));
 			}, this);
 
