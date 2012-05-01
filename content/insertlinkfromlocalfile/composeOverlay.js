@@ -42,31 +42,33 @@ window.addEventListener('DOMContentLoaded', function() {
 		mIOService : Components.classes['@mozilla.org/network/io-service;1']
 			.getService(Components.interfaces.nsIIOService),
 
-		mDirectoryService : Components.classes['@mozilla.org/file/directory_service;1']
-			.getService(Components.interfaces.nsIProperties),
-
 		mMIMEService : Components.classes['@mozilla.org/mime;1']
 			.getService(Components.interfaces.nsIMIMEService),
 
-		get fileHandler()
-		{
-			if (!this.mFileHandler)
-				this.mFileHandler = this.mIOService.getProtocolHandler('file')
-					.QueryInterface(Components.interfaces.nsIFileProtocolHandler);
-			return this.mFileHandler;
-		},
+		mPrefs : Components.classes['@mozilla.org/preferences;1']
+			.getService(Components.interfaces.nsIPrefBranch),
 
-		getFileWithPath : function(aPath)
+		get fileProtocolHandler()
 		{
-			var file = Components.classes['@mozilla.org/file/local;1']
-						.createInstance(Components.interfaces.nsILocalFile);
-			file.initWithPath(aPath);
-			return file;
+			if (!this.mFileProtocolHandler)
+				this.mFileProtocolHandler = this.mIOService.getProtocolHandler('file')
+					.QueryInterface(Components.interfaces.nsIFileProtocolHandler);
+			return this.mFileProtocolHandler;
 		},
 
 		get editor()
 		{
 			return document.getElementById('content-frame');
+		},
+
+		get shouldDecode()
+		{
+			return this.mPrefs.getBoolPref('extensions.insertlinkfromlocalfile@clear-code.com.decodeLinkLabel');
+		},
+
+		get shouldAttach()
+		{
+			return this.mPrefs.getBoolPref('extensions.insertlinkfromlocalfile@clear-code.com.attachLinkedFile');
 		},
 
 		isImageFile : function(aFile)
@@ -102,6 +104,26 @@ window.addEventListener('DOMContentLoaded', function() {
 			return files;
 		},
 
+		createLink : function(aFile, aDocument)
+		{
+			aDocument = aDocument || this.editor.contentDocument;
+			aDocument.createTextNode(aFile.path)
+			var url = this.fileProtocolHandler.newFileURI(aFile);
+			if (this.editor.getAttribute('editortype') == 'htmlmail') {
+				let content = aDocument.createTextNode(this.shouldDecode ? decodeURI(url.spec) : url.spec);
+				let link = aDocument.createElement('a');
+				link.setAttribute('href', url.spec);
+				link.setAttribute('_moz_dirty', '');
+				if (!this.shouldAttach)
+					link.setAttribute('moz-do-not-send', 'true');
+				link.appendChild(content);
+				return link;
+			}
+			else {
+				return aDocument.createTextNode(url.spec);
+			}
+		},
+
 		init : function()
 		{
 			window.addEventListener('unload', this, false);
@@ -123,6 +145,28 @@ window.addEventListener('DOMContentLoaded', function() {
 		onDrop : function(aEvent)
 		{
 			var files = this.getLinkableFiles(aEvent);
+			if (!files)
+				return;
+
+			var selection = this.editor.contentWindow.getSelection();
+			if (selection === null || !selection.rangeCount)
+				return;
+
+			var d = this.editor.contentDocument;
+			var fragment = d.createDocumentFragment();
+			files.forEach(function(aFile, aIndex) {
+				if (aIndex) {
+					let br = d.createElement('br');
+					br.setAttribute('_moz_dirty', '');
+					fragment.appendChild(br);
+				}
+				fragment.appendChild(this.createLink(aFile, d));
+			}, this);
+
+			var range = selection.getRangeAt(0);
+			range.insertNode(fragment);
+
+			aEvent.preventDefault();
 		},
 
 		onUnload : function()
