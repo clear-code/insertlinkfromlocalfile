@@ -208,12 +208,18 @@ window.addEventListener('DOMContentLoaded', function() {
 			if (range) {
 				this.setCursor(range.startContainer, range.startOffset);
 				range.detach();
-				if (this.isHTML)
+				if (this.isHTML) {
 					this.editor.QueryInterface(Components.interfaces.nsIHTMLEditor)
 							.insertHTML(source);
-				else
+				}
+				else {
 					this.editor.QueryInterface(Components.interfaces.nsIPlaintextEditor)
 							.insertText(source);
+					// on this timing, the caret is unexpectedly hidden.
+					// after the window lose and get focus again, the caret appear.
+					this.frame.contentWindow.blur();
+					this.frame.contentWindow.focus();
+				}
 			}
 
 			aEvent.preventDefault();
