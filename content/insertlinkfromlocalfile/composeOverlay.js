@@ -81,6 +81,27 @@ window.addEventListener('DOMContentLoaded', function() {
 			return false;
 		},
 
+		getLinkableFiles : function(aEvent)
+		{
+			var dt = aEvent.dataTransfer;
+			var files = [];
+			for (let i = 0, maxi = dt.mozItemCount; i < maxi; ++i)
+			{
+				let isImage = false;
+				let file = null;
+				let types = dt.mozTypesAt(i);
+				Array.forEach(types, function(aType) {
+					if (aType.indexOf('image/') == 0)
+						isImage = true;
+					if (aType == 'application/x-moz-file')
+						file = dt.mozGetDataAt(aType, i);
+				});
+				if (file && !isImage && !this.isImageFile(file))
+					files.push(file.QueryInterface(Components.interfaces.nsILocalFile));
+			}
+			return files;
+		},
+
 		init : function()
 		{
 			window.addEventListener('unload', this, false);
@@ -101,24 +122,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
 		onDrop : function(aEvent)
 		{
-			var dt = aEvent.dataTransfer;
-			var files = [];
-			for (let i = 0, maxi = dt.mozItemCount; i < maxi; ++i)
-			{
-				let isImage = false;
-				let file = null;
-				let types = dt.mozTypesAt(i);
-				Array.forEach(types, function(aType) {
-					if (aType.indexOf('image/') == 0)
-						isImage = true;
-					if (aType == 'application/x-moz-file')
-						file = dt.mozGetDataAt(aType, i);
-				});
-				if (file && !isImage && !this.isImageFile(file))
-					files.push(file.QueryInterface(Components.interfaces.nsILocalFile));
-			}
-			if (!files.length)
-				return;
+			var files = this.getLinkableFiles(aEvent);
 		},
 
 		onUnload : function()
