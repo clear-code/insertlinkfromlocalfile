@@ -139,6 +139,7 @@ window.addEventListener('DOMContentLoaded', function() {
 		init : function()
 		{
 			window.addEventListener('unload', this, false);
+			this.editor.addEventListener('dragover', this, true);
 			this.editor.addEventListener('drop', this, true);
 		},
 
