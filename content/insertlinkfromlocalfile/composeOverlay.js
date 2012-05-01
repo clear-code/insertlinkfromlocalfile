@@ -63,7 +63,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
 		get editor()
 		{
-			return this.frame.editingSession.getEditorForWindow(this.frame.contentWindow);
+			return this.frame.docShell.QueryInterface(Components.interfaces.nsIEditorDocShell).editor;
 		},
 
 		get shouldDecode()
@@ -116,18 +116,9 @@ window.addEventListener('DOMContentLoaded', function() {
 
 		getCursorRange : function(aEvent)
 		{
-			if (this.isHTML) {
-				let selection = this.frame.contentWindow.getSelection();
-				if (selection === null || !selection.rangeCount)
-					return null;
-				else
-					return selection.getRangeAt(0);
-			}
-			else {
-				let range = this.frame.contentDocument.createRange();
-				range.setStart(aEvent.rangeParent, aEvent.rangeOffset);
-				return range;
-			}
+			var range = this.frame.contentDocument.createRange();
+			range.setStart(aEvent.rangeParent, aEvent.rangeOffset);
+			return range;
 		},
 
 		createBR : function(aDocument)
@@ -155,6 +146,13 @@ window.addEventListener('DOMContentLoaded', function() {
 			else {
 				return aDocument.createTextNode(url);
 			}
+		},
+
+		setCursor : function(aParent, aOffset)
+		{
+			var selection = this.editor.selection.QueryInterface(Components.interfaces.nsISelectionPrivate);
+			selection.interlinePosition = true;
+			selection.collapse(aParent, aOffset);
 		},
 
 		init : function()
@@ -191,9 +189,8 @@ window.addEventListener('DOMContentLoaded', function() {
 
 			// plaintext editor doesn't update the cursor while dragging.
 			var range = this.getCursorRange(aEvent);
-			var selection = this.frame.contentWindow.getSelection();
-			selection.removeAllRanges();
-			selection.addRange(range);
+			this.setCursor(range.startContainer, range.startOffset);
+			range.detach();
 		},
 
 		onDrop : function(aEvent)
@@ -212,9 +209,8 @@ window.addEventListener('DOMContentLoaded', function() {
 			var range = this.getCursorRange(aEvent);
 			if (range) {
 				this.editor.insertNode(fragment, range.startContainer,range.startOffset);
-				let selection = this.frame.contentWindow.getSelection();
-				selection.removeAllRanges();
-				selection.addRange(range);
+				this.setCursor(range.startContainer, range.startOffset);
+				range.detach();
 			}
 
 			aEvent.preventDefault();
