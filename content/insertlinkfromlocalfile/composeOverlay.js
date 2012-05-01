@@ -61,23 +61,37 @@ window.addEventListener('DOMContentLoaded', function() {
 			return file;
 		},
 
+		get editor()
+		{
+			return document.getElementById('content-frame');
+		},
+
 		init : function()
 		{
 			window.addEventListener('unload', this, false);
+			this.editor.addEventListener('drop', this, true);
 		},
 
 		handleEvent : function(aEvent)
 		{
 			switch (aEvent.type)
 			{
+				case 'drop':
+					return this.onDrop(aEvent);
+
 				case 'unload':
 					return this.onUnload();
 			}
 		},
 
+		onDrop : function(aEvent)
+		{
+		},
+
 		onUnload : function()
 		{
 			window.removeEventListener('unload', this, false);
+			this.editor.removeEventListener('drop', this, true);
 		}
 	};
 	window.LinkToDroppedFiles.init();
