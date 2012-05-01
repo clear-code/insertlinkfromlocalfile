@@ -168,7 +168,7 @@ window.addEventListener('DOMContentLoaded', function() {
 			var d = this.editor.contentDocument;
 			var fragment = d.createDocumentFragment();
 			files.forEach(function(aFile, aIndex) {
-				if (aIndex > 0) fragment.appdnChild(this.createBR(d));
+				if (aIndex > 0) fragment.appendChild(this.createBR(d));
 				fragment.appendChild(this.createLink(aFile, d));
 			}, this);
 
