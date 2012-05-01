@@ -1,0 +1,8 @@
+content	insertlinkfromlocalfile	jar:chrome/insertlinkfromlocalfile.jar!/content/insertlinkfromlocalfile/
+
+overlay	chrome://messenger/content/messenger.xul	chrome://insertlinkfromlocalfile/content/globalOverlay.xul
+overlay	chrome://messenger/content/messageWindow.xul	chrome://insertlinkfromlocalfile/content/globalOverlay.xul
+overlay	chrome://messenger/content/messengercompose/messengercompose.xul	chrome://insertlinkfromlocalfile/content/globalOverlay.xul
+
+locale	insertlinkfromlocalfile	en-US	jar:chrome/insertlinkfromlocalfile.jar!/locale/en-US/insertlinkfromlocalfile/
+locale	insertlinkfromlocalfile	ja	jar:chrome/insertlinkfromlocalfile.jar!/locale/ja/insertlinkfromlocalfile/
