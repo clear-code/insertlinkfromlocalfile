@@ -56,9 +56,14 @@ window.addEventListener('DOMContentLoaded', function() {
 			return this.mFileProtocolHandler;
 		},
 
-		get editor()
+		get frame()
 		{
 			return document.getElementById('content-frame');
+		},
+
+		get editor()
+		{
+			return this.frame.editingSession.getEditorForWindow(this.frame.contentWindow);
 		},
 
 		get shouldDecode()
@@ -73,7 +78,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
 		get isHTML()
 		{
-			return this.editor.getAttribute('editortype') == 'htmlmail';
+			return this.frame.getAttribute('editortype') == 'htmlmail';
 		},
 
 		isImageFile : function(aFile)
@@ -109,9 +114,25 @@ window.addEventListener('DOMContentLoaded', function() {
 			return files;
 		},
 
+		getCursorRange : function(aEvent)
+		{
+			if (this.isHTML) {
+				let selection = this.frame.contentWindow.getSelection();
+				if (selection === null || !selection.rangeCount)
+					return null;
+				else
+					return selection.getRangeAt(0);
+			}
+			else {
+				let range = this.frame.contentDocument.createRange();
+				range.setStart(aEvent.rangeParent, aEvent.rangeOffset);
+				return range;
+			}
+		},
+
 		createBR : function(aDocument)
 		{
-			aDocument = aDocument || this.editor.contentDocument;
+			aDocument = aDocument || this.frame.contentDocument;
 			var br = aDocument.createElement('br');
 			br.setAttribute('_moz_dirty', '');
 			return br;
@@ -119,7 +140,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
 		createLink : function(aFile, aDocument)
 		{
-			aDocument = aDocument || this.editor.contentDocument;
+			aDocument = aDocument || this.frame.contentDocument;
 			var url = this.fileProtocolHandler.newFileURI(aFile).spec;
 			if (this.isHTML) {
 				let content = aDocument.createTextNode(this.shouldDecode ? decodeURI(url) : url);
@@ -139,9 +160,9 @@ window.addEventListener('DOMContentLoaded', function() {
 		init : function()
 		{
 			window.addEventListener('unload', this, false);
-			this.editor.addEventListener('dragenter', this, true);
-			this.editor.addEventListener('dragover', this, true);
-			this.editor.addEventListener('drop', this, true);
+			this.frame.addEventListener('dragenter', this, true);
+			this.frame.addEventListener('dragover', this, true);
+			this.frame.addEventListener('drop', this, true);
 		},
 
 		handleEvent : function(aEvent)
@@ -162,9 +183,17 @@ window.addEventListener('DOMContentLoaded', function() {
 
 		onDragEnter : function(aEvent)
 		{
-			if (!this.isHTML &&
-				this.getLinkableFiles(aEvent).length)
-				aEvent.preventDefault();
+			if (this.isHTML || !this.getLinkableFiles(aEvent).length)
+				return;
+
+			// plaintext editor doesn't accept dragged objects except text by default.
+			aEvent.preventDefault();
+
+			// plaintext editor doesn't update the cursor while dragging.
+			var range = this.getCursorRange(aEvent);
+			var selection = this.frame.contentWindow.getSelection();
+			selection.removeAllRanges();
+			selection.addRange(range);
 		},
 
 		onDrop : function(aEvent)
@@ -173,19 +202,20 @@ window.addEventListener('DOMContentLoaded', function() {
 			if (!files)
 				return;
 
-			var selection = this.editor.contentWindow.getSelection();
-			if (selection === null || !selection.rangeCount)
-				return;
-
-			var d = this.editor.contentDocument;
+			var d = this.frame.contentDocument;
 			var fragment = d.createDocumentFragment();
 			files.forEach(function(aFile, aIndex) {
 				if (aIndex > 0) fragment.appendChild(this.createBR(d));
 				fragment.appendChild(this.createLink(aFile, d));
 			}, this);
 
-			var range = selection.getRangeAt(0);
-			range.insertNode(fragment);
+			var range = this.getCursorRange(aEvent);
+			if (range) {
+				this.editor.insertNode(fragment, range.startContainer,range.startOffset);
+				let selection = this.frame.contentWindow.getSelection();
+				selection.removeAllRanges();
+				selection.addRange(range);
+			}
 
 			aEvent.preventDefault();
 		},
@@ -193,9 +223,9 @@ window.addEventListener('DOMContentLoaded', function() {
 		onUnload : function()
 		{
 			window.removeEventListener('unload', this, false);
-			this.editor.removeEventListener('dragenter', this, true);
-			this.editor.removeEventListener('dragover', this, true);
-			this.editor.removeEventListener('drop', this, true);
+			this.frame.removeEventListener('dragenter', this, true);
+			this.frame.removeEventListener('dragover', this, true);
+			this.frame.removeEventListener('drop', this, true);
 		}
 	};
 	window.LinkToDroppedFiles.init();
