@@ -8,9 +8,9 @@
                    em:version="0.1"
                    em:description="Inserts links from local files via drag and drop on the composition window."
                    em:creator="ClearCode Inc."
-                   em:homepageURL="http://www.clear-code.com/">
+                   em:homepageURL="http://www.clear-code.com/"
+                   em:optionsURL="chrome://insertlinkfromlocalfile/content/config.xul">
 <!--
-                   em:optionsURL="chrome://openshortcuts/content/config.xul"
                    em:iconURL="chrome://openshortcuts/content/icon.png"
 -->
 
