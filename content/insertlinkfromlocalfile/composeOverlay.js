@@ -108,7 +108,7 @@ window.addEventListener('DOMContentLoaded', function() {
 					if (aType == 'application/x-moz-file')
 						file = dt.mozGetDataAt(aType, i);
 				});
-				if (file && !isImage && !this.isImageFile(file))
+				if (file && !isImage && (!this.isHTML || !this.isImageFile(file)))
 					files.push(file.QueryInterface(Components.interfaces.nsILocalFile));
 			}
 			return files;
