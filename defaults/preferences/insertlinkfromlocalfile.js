@@ -34,4 +34,5 @@
  * ***** END LICENSE BLOCK ***** */
 
 pref("extensions.insertlinkfromlocalfile@clear-code.com.attachLinkedFile", false);
-pref("extensions.insertlinkfromlocalfile@clear-code.com.decodeLinkLabel", true);
+pref("extensions.insertlinkfromlocalfile@clear-code.com.decodeLinkLabel.html", true);
+pref("extensions.insertlinkfromlocalfile@clear-code.com.decodeLinkLabel.plain", false);

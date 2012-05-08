@@ -35,4 +35,5 @@
 
 <!ENTITY config.title            "Configuration about Inserted Links from Local Files">
 <!ENTITY config.attachLinkedFile "Attach dropped files">
-<!ENTITY config.decodeLinkLabel  "Decode link labels automatically for the human readability">
+<!ENTITY config.decodeLinkLabel.html "Decode link labels in HTML mails automatically for the human readability">
+<!ENTITY config.decodeLinkLabel.plain "Decode URLs in plain text mails automatically for the human readability">

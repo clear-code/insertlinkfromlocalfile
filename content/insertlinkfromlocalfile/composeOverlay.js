@@ -66,9 +66,14 @@ window.addEventListener('DOMContentLoaded', function() {
 			return this.frame.docShell.QueryInterface(Components.interfaces.nsIEditorDocShell).editor;
 		},
 
-		get shouldDecode()
+		get shouldDecodeInHTML()
 		{
-			return this.mPrefs.getBoolPref('extensions.insertlinkfromlocalfile@clear-code.com.decodeLinkLabel');
+			return this.mPrefs.getBoolPref('extensions.insertlinkfromlocalfile@clear-code.com.decodeLinkLabel.html');
+		},
+
+		get shouldDecodeInPlainText()
+		{
+			return this.mPrefs.getBoolPref('extensions.insertlinkfromlocalfile@clear-code.com.decodeLinkLabel.plain');
 		},
 
 		get shouldAttach()
@@ -133,7 +138,7 @@ window.addEventListener('DOMContentLoaded', function() {
 		{
 			var url = this.fileProtocolHandler.newFileURI(aFile).spec;
 			if (this.isHTML) {
-				let content = this.shouldDecode ? decodeURI(url) : url;
+				let content = this.shouldDecodeInHTML ? decodeURI(url) : url;
 				content = content.replace(/&/g, '&amp;')
 								.replace(/</g, '&lt;')
 								.replace(/>/g, '&gt;');
@@ -142,7 +147,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				return link;
 			}
 			else {
-				return url;
+				return this.shouldDecodeInPlainText ? decodeURI(url) : url ;
 			}
 		},
 

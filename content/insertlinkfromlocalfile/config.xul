@@ -47,17 +47,23 @@
 		<preference id="attachLinkedFile"
 			name="extensions.insertlinkfromlocalfile@clear-code.com.attachLinkedFile"
 			type="bool"/>
-		<preference id="decodeLinkLabel"
-			name="extensions.insertlinkfromlocalfile@clear-code.com.decodeLinkLabel"
+		<preference id="decodeLinkLabel.html"
+			name="extensions.insertlinkfromlocalfile@clear-code.com.decodeLinkLabel.html"
+			type="bool"/>
+		<preference id="decodeLinkLabel.plain"
+			name="extensions.insertlinkfromlocalfile@clear-code.com.decodeLinkLabel.plain"
 			type="bool"/>
 	</preferences>
 
 	<checkbox id="attachLinkedFile-check"
 		preference="attachLinkedFile"
 		label="&config.attachLinkedFile;"/>
-	<checkbox id="decodeLinkLabel-check"
-		preference="decodeLinkLabel"
-		label="&config.decodeLinkLabel;"/>
+	<checkbox id="decodeLinkLabel.html-check"
+		preference="decodeLinkLabel.html"
+		label="&config.decodeLinkLabel.html;"/>
+	<checkbox id="decodeLinkLabel.plain-check"
+		preference="decodeLinkLabel.plain"
+		label="&config.decodeLinkLabel.plain;"/>
 </prefpane>
 
 </prefwindow>
