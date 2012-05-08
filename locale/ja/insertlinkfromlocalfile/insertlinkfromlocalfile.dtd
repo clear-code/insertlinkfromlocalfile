@@ -35,5 +35,5 @@
 
 <!ENTITY config.title            "ローカルファイルをドロップした時の挙動の設定">
 <!ENTITY config.attachLinkedFile "ドロップされたファイルを添付する">
-<!ENTITY config.decodeLinkLabel.html "HTML気鋭式のメールに挿入するリンクについて、URLを人が読みやすい形式で表示する">
+<!ENTITY config.decodeLinkLabel.html "HTML形式のメールに挿入するリンクについて、URLを人が読みやすい形式で表示する">
 <!ENTITY config.decodeLinkLabel.plain "プレーンテキスト形式のメールに挿入するURLを人が読みやすい形式にする">
