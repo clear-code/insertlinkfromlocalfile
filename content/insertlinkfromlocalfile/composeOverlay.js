@@ -198,6 +198,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
 		onDrop : function(aEvent)
 		{
+		try {
 			var files = this.getLinkableFiles(aEvent);
 			dump('dropped linkable file: ' + files + '\n');
 			if (!files)
@@ -231,6 +232,11 @@ window.addEventListener('DOMContentLoaded', function() {
 			}
 
 			aEvent.preventDefault();
+		}
+		catch(e) {
+			dump(e+'\n');
+			Components.utils.reportError(e);
+		}
 		},
 
 		onUnload : function()
