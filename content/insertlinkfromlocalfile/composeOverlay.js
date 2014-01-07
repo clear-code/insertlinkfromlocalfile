@@ -199,6 +199,7 @@ window.addEventListener('DOMContentLoaded', function() {
 		onDrop : function(aEvent)
 		{
 			var files = this.getLinkableFiles(aEvent);
+			dump('dropped linkable file: ' + files + '\n');
 			if (!files)
 				return;
 
@@ -208,8 +209,10 @@ window.addEventListener('DOMContentLoaded', function() {
 				if (aIndex > 0) source += this.createBR();
 				source += this.createLink(aFile);
 			}, this);
+			dump('inserting: ' + source + '\n');
 
 			var range = this.getCursorRange(aEvent);
+			dump('cursor range: ' + !!range + '\n');
 			if (range) {
 				this.setCursor(range.startContainer, range.startOffset);
 				range.detach();
