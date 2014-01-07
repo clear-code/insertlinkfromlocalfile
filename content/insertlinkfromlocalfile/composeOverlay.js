@@ -63,7 +63,8 @@ window.addEventListener('DOMContentLoaded', function() {
 
 		get editor()
 		{
-			return this.frame.docShell.QueryInterface(Components.interfaces.nsIEditorDocShell).editor;
+			return this.frame.docShell.editor ||
+					this.frame.docShell.QueryInterface(Components.interfaces.nsIEditorDocShell).editor;
 		},
 
 		get shouldDecodeInHTML()
