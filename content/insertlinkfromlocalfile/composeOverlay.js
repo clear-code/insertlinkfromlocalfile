@@ -137,14 +137,13 @@ window.addEventListener('DOMContentLoaded', function() {
 
 		createLink : function(aFile)
 		{
-			var url = this.fileProtocolHandler.newFileURI(aFile).spec;
+		        var url = this.fileProtocolHandler.newFileURI(aFile).spec;
 			if (this.isHTML) {
 				let content = this.shouldDecodeInHTML ? decodeURI(url) : url;
-				content = content.replace(/&/g, '&amp;')
-								.replace(/</g, '&lt;')
-								.replace(/>/g, '&gt;');
 				let donotsend = this.shouldAttach ? '' : ' moz-do-not-send="true" ';
-				let link = '<a href='+ url.quote() + ' _moz_dirty ' + donotsend + '>' + content + '</a>';
+				let link = '<a href="'+ this.eccapeForHTMLAttrValue(url) + '"' +
+					   ' _moz_dirty' + donotsend + '>' +
+					   this.escapeForHTML(content) + '</a>';
 				return link;
 			}
 			else {
