@@ -152,6 +152,16 @@ window.addEventListener('DOMContentLoaded', function() {
 			}
 		},
 
+		escapeForHTML : function(aString) {
+			return aString.replace(/&/g, '&amp;')
+				      .replace(/</g, '&lt;')
+				      .replace(/>/g, '&gt;');
+		},
+
+		eccapeForHTMLAttrValue : function(aString) {
+			return this.escapeForHTML(aString).replace(/"/g, "&quot;");
+		},
+
 		setCursor : function(aParent, aOffset)
 		{
 			var selection = this.editor.selection.QueryInterface(Components.interfaces.nsISelectionPrivate);
