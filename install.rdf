@@ -5,7 +5,7 @@
   <RDF:Description RDF:about="urn:mozilla:install-manifest"
                    em:id="insertlinkfromlocalfile@clear-code.com"
                    em:name="Insert Link from Local File"
-                   em:version="1.0"
+                   em:version="1.1"
                    em:type="2"
                    em:description="Inserts links from local files via drag and drop on the composition window."
                    em:creator="ClearCode Inc."
