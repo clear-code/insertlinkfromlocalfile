@@ -1,5 +1,5 @@
 set appname=insertlinkfromlocalfile
 
-copy buildscript\makexpi.sh .\
+copy makexpi\makexpi.sh .\
 bash makexpi.sh -n %appname% -v
 del makexpi.sh

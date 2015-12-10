@@ -2,6 +2,6 @@
 
 appname=insertlinkfromlocalfile
 
-cp buildscript/makexpi.sh ./
+cp makexpi/makexpi.sh ./
 ./makexpi.sh -n $appname -v
 rm ./makexpi.sh
