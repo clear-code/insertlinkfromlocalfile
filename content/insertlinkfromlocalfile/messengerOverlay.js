@@ -39,7 +39,7 @@
   const IOService = Cc['@mozilla.org/network/io-service;1'].getService(Ci.nsIIOService)
   const FileHandler = IOService.getProtocolHandler('file').QueryInterface(Ci.nsIFileProtocolHandler);
 
-  window.addEventListener('DOMContentLoaded', function onDOMContentLoaded(aEvent) {
+  window.addEventListener('load', function onDOMContentLoaded(aEvent) {
     window.removeEventListener(aEvent.type, onDOMContentLoaded, false);
 
     document.getElementById('messagepane').addEventListener('click', function(aEvent) {
